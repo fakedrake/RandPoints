@@ -1,0 +1,43 @@
+* RandPoints
+  This is just a python script that gets a list of players in a game
+  mapped to their score and should be able to randomly select one
+  based on their points.
+
+** Usage
+   Just run:
+
+   #+BEGIN_EXAMPLE
+   python ./randpoints.py input-file.json [output-file.json]
+   #+END_EXAMPLE
+
+   and the script will output the randomly selected people and
+   optionally return an output configuration with the same prizes as
+   in the input but with an updated the player list.
+
+   An example input file is this:
+
+   #+BEGIN_SRC json
+   {
+    "players": {"mary": 10, "george":1000, "alfonso": 100},
+    "prizes": ["gold", "silver", "bronze"],
+    "remove_winners": true
+   }
+   #+END_SRC
+
+   the output will probably be:
+
+   #+BEGIN_EXAMPLE
+   $ ./randpoints.py players.json output.json
+Prize gold goes to george
+Prize silver goes to alfonso
+Prize bronze goes to mary
+   #+END_EXAMPLE
+
+   and the output file (if any) will be
+
+   #+BEGIN_SRC json
+   {"players": {}, "remove_winners": true, "prizes": ["gold", "silver", "bronze"]}
+   #+END_SRC
+
+    The input and output files can be the same file if you want to
+    give the same prizes again later to other people.

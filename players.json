@@ -1,0 +1,5 @@
+{
+    "players": {"mary": 10, "george":1000, "alfonso": 100},
+    "prizes": ["gold", "silver", "bronze"],
+    "remove_winners": true
+}
