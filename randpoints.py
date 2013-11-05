@@ -17,17 +17,26 @@ def random_key(d):
     it is clearer this way.
     """
 
+    # The sum of points.
     s = 0
     accend_kv = []
+
     for k,v in d.items():
+        # Sum of points so far
         s += v
+        # Keep a mapping of each key and the sum of points when we
+        # encountered it
         accend_kv.append((k,s))
 
+
+    # If no player has points randint will be unable to provide us
+    # with a random number so just return the first key.
     try:
         r = randint(1,s)
     except ValueError:
         return d.keys()[0]
 
+    # Return the key which is mapped to the range in which r falls.
     for k,v in accend_kv:
         if r <= v:
             return k
@@ -48,17 +57,24 @@ def prize_keys(prizes, players, remove=False):
 
     # Use tmp in order to not change the original player dict.
     tmp = players.copy()
+    # Map the prizes to the winners in ret dictionary
     ret = {}
 
     for p in prizes:
+        # For each prize get a (biased) random winner
         winner = random_key(tmp)
+
+        # and remove him or diminish his points depending on
+        # configuration
         if remove:
             del tmp[winner]
         else:
             tmp[winner] = 0
 
+        # also map him to his prize
         ret[p] = winner
 
+    # return a tuple of the prizes and the new point distribution
     return (ret, tmp)
 
 
@@ -78,9 +94,12 @@ def read_config(fname):
     }
     """
 
-    with open(fname) as fd:
-        d = json.load(fd)
+    with open(fname) as fd:     # Open fname for reading
+        d = json.load(fd)       # Read the contents using the json
+                                # formatter
 
+
+    # Read and return the result as a tuple.
     players = d['players']
     prizes = d['prizes']
     remove_winners = d['remove_winners']
@@ -95,7 +114,13 @@ def write_config(fname, prizes, players, remove_winners):
     the examples. They are both correct.
     """
 
-    with open(fname, 'w') as fd:
+    with open(fname, 'w') as fd: # Open file fname for writing
+
+        # Write the dictionary
+        # {'players': <players>,
+        # 'prizes':<prizes>,
+        # 'remove_winners:<wether to remove winners>}
+        # in the open file as text using the json formatter.
         json.dump({'players': players,
                    'prizes':prizes,
                    'remove_winners':remove_winners}, fd)
@@ -103,13 +128,19 @@ def write_config(fname, prizes, players, remove_winners):
 if __name__ == '__main__':
     HELP_MESSAGE = "run like this: python ./randpoints.py infile.json [outfile.json]"
 
+    # If arguments are too few or if the user asks for help show her
+    # help.
     if len(sys.argv) < 2 or sys.argv[1] == '--help':
         sys.stdout.write(HELP_MESSAGE)
         exit(0)
 
+    # Just read the configuration
     prizes, players, remove = read_config(sys.argv[1])
+    # Get the mapping of prizes to players and the new point
+    # distribution.
     winners, new_players = prize_keys(prizes, players, remove)
 
+    # For each prize show the corresponding winner
     for p in prizes :
         sys.stdout.write("Prize %s goes to %s\n" % (p, winners[p]))
 
