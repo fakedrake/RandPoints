@@ -4,6 +4,15 @@ from random import randint
 import json
 import sys
 
+# A trick for `input' to work for python 2 correctly, don bother too
+# much with this.
+try:
+    import __builtin__
+    input = getattr(__builtin__, 'raw_input')
+except (ImportError, AttributeError):
+    pass
+
+
 def random_key(d):
     """
     Select a random key based on weights of the values. Let s be the
@@ -125,17 +134,30 @@ def write_config(fname, prizes, players, remove_winners):
                    'prizes':prizes,
                    'remove_winners':remove_winners}, fd)
 
-if __name__ == '__main__':
+def main(argv):
+    """
+    This is the main function.
+    """
+
+
     HELP_MESSAGE = "run like this: python ./randpoints.py infile.json [outfile.json]"
 
-    # If arguments are too few or if the user asks for help show her
-    # help.
-    if len(sys.argv) < 2 or sys.argv[1] == '--help':
+    # If inputs are too few just ask them interactively.
+    if len(argv) < 2:
+        argv.append(str(input("Provide input configuration file: ")))
+        out = str(input("Provide output config file(blank for no output file): "))
+
+        if out:
+            argv.append(out)
+
+
+    # if the user asks for help show her help.
+    if argv[1] == '--help':
         sys.stdout.write(HELP_MESSAGE)
         exit(0)
 
     # Just read the configuration
-    prizes, players, remove = read_config(sys.argv[1])
+    prizes, players, remove = read_config(argv[1])
     # Get the mapping of prizes to players and the new point
     # distribution.
     winners, new_players = prize_keys(prizes, players, remove)
@@ -152,3 +174,7 @@ if __name__ == '__main__':
         write_config(sys.argv[2], prizes, new_players, remove)
     except IndexError:
         pass
+
+if __name__ == '__main__':
+    import sys
+    main(sys.argv)
