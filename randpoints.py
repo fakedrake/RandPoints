@@ -145,11 +145,17 @@ def main(argv):
     # If inputs are too few just ask them interactively.
     if len(argv) < 2:
         argv.append(str(input("Provide input configuration file: ")))
+        with open(argv[-1]) as fd:
+            # Raise an error now if the file does not exist
+            pass
+
         out = str(input("Provide output config file(blank for no output file): "))
 
         if out:
             argv.append(out)
-
+            with open(argv[-1]) as fd:
+                # Raise an error now if the file does not exist
+                pass
 
     # if the user asks for help show her help.
     if argv[1] == '--help':
