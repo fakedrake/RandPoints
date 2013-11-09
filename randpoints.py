@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
 from random import randint
+from datetime import datetime
+
 try:
     from itertools import izip_longest as zip_longest
 except ImportError:
@@ -200,6 +202,7 @@ def main():
         s = sum([v for k,v in players.items()])
 
         with  open(res,"w") as fd:
+            fd.write("This is the draw of the month (%s)\n" % datetime.now())
             for p in prizes:
                 fd.write("%s -> %s (p: %d/%d)\n" % (p, winners[p], players[winners[p]], s))
     except FileNotFoundError:
