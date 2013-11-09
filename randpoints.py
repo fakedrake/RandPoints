@@ -50,7 +50,7 @@ def random_key(d):
     try:
         r = randint(1,s)
     except ValueError:
-        return d.keys()[randint(0,len(keys)-1)]
+        return list(d.keys())[randint(0,len(d.keys())-1)]
 
     # Return the key which is mapped to the range in which r falls.
     for k,v in accend_kv:
