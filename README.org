@@ -7,7 +7,7 @@
    Just run:
 
    #+BEGIN_EXAMPLE
-   python ./randpoints.py input-file.json [output-file.json]
+   python ./randpoints.py input-file.json [output-file.json [result-file.txt]]
    #+END_EXAMPLE
 
    and the script will output the randomly selected people and
@@ -39,5 +39,13 @@ Prize bronze goes to mary
    {"players": {}, "remove_winners": true, "prizes": ["gold", "silver", "bronze"]}
    #+END_SRC
 
-    The input and output files can be the same file if you want to
-    give the same prizes again later to other people.
+   the result file should be something that looks like:
+
+   #+BEGIN_SRC
+gold -> george (p: 1000/1110)
+silver -> alfonso (p: 100/1110)
+bronze -> mary (p: 10/1110)
+   #+END_SRC
+
+   The input and output files can be the same file if you want to
+   give the same prizes again later to other people.

@@ -199,9 +199,9 @@ def main():
 
         s = sum([v for k,v in players.items()])
 
-        with  open(res) as fd:
+        with  open(res,"w") as fd:
             for p in prizes:
-                fd.write("%s -> %s (p: %d/%d)", p, winners[p], players[winners[p]], s)
+                fd.write("%s -> %s (p: %d/%d)\n" % (p, winners[p], players[winners[p]], s))
     except FileNotFoundError:
         pass
 
