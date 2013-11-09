@@ -1,6 +1,11 @@
 #!/usr/bin/env python
 
 from random import randint
+try:
+    from itertools import izip_longest as zip_longest
+except ImportError:
+    from itertools import zip_longest
+
 import json
 import sys
 
@@ -43,7 +48,7 @@ def random_key(d):
     try:
         r = randint(1,s)
     except ValueError:
-        return d.keys()[0]
+        return d.keys()[randint(0,len(keys)-1)]
 
     # Return the key which is mapped to the range in which r falls.
     for k,v in accend_kv:
@@ -134,36 +139,45 @@ def write_config(fname, prizes, players, remove_winners):
                    'prizes':prizes,
                    'remove_winners':remove_winners}, fd)
 
-def main(argv):
-    """
-    This is the main function.
-    """
 
-
+def arguments():
     HELP_MESSAGE = "run like this: python ./randpoints.py infile.json [outfile.json]"
 
     # If inputs are too few just ask them interactively.
-    if len(argv) < 2:
-        argv.append(str(input("Provide input configuration file: ")))
-        with open(argv[-1]) as fd:
-            # Raise an error now if the file does not exist
-            pass
+    if len(sys.argv) < 2:
+        conf = ""
+        while not conf:
+            conf = str(input("Provide input configuration file: "))
 
-        out = str(input("Provide output config file(blank for no output file): "))
+            try:
+                with open(conf) as fd:
+                    pass
+            except IOError:
+                sys.stderr.write("No such file '%s'" % conf)
+                conf = ""
 
-        if out:
-            argv.append(out)
-            with open(argv[-1]) as fd:
-                # Raise an error now if the file does not exist
-                pass
+        out = str(input("Provide output config file (blank for no output file): "))
+        res = str(input("Provide a file to write the result (blank for no output file): "))
 
-    # if the user asks for help show her help.
-    if argv[1] == '--help':
-        sys.stdout.write(HELP_MESSAGE)
-        exit(0)
+    else:
+        conf,out,res = [v for k,v in zip_longest(range(3), sys.argv[1:])]
+
+        # if the user asks for help show her help.
+        if sys.argv[1] == '--help':
+            sys.stdout.write(HELP_MESSAGE)
+            exit(0)
+
+    return conf,out,res
+
+
+def main():
+    """
+    This is the main function.
+    """
+    conf, out, res = arguments()
 
     # Just read the configuration
-    prizes, players, remove = read_config(argv[1])
+    prizes, players, remove = read_config(conf)
     # Get the mapping of prizes to players and the new point
     # distribution.
     winners, new_players = prize_keys(prizes, players, remove)
@@ -177,10 +191,19 @@ def main(argv):
     # information the same. Also the user may have not provided a file
     # so forgive that and exit gracefully
     try:
-        write_config(sys.argv[2], prizes, new_players, remove)
+        write_config(out, prizes, new_players, remove)
     except IndexError:
         pass
 
+    try:
+
+        s = sum([v for k,v in players.items()])
+
+        with  open(res) as fd:
+            for p in prizes:
+                fd.write("%s -> %s (p: %d/%d)", p, winners[p], players[winners[p]], s)
+    except FileNotFoundError:
+        pass
+
 if __name__ == '__main__':
-    import sys
-    main(sys.argv)
+    main()
